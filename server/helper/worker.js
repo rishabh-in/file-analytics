@@ -2,21 +2,27 @@ import { parentPort, workerData } from 'worker_threads';
 import fs from 'fs';
 import axios from 'axios';
 
-const processFile = async(filePath) => {
+const processFile = async(file) => {
     try {
-        const analytics = await getAnalytics(filePath);
+        const analytics = await getAnalytics(file);
         parentPort.postMessage(analytics);
     } catch (error) {
         parentPort.postMessage({ error: error.message });
     }
 }
 
- const getAnalytics= async (filePath) => {
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
+ const getAnalytics= async (file) => {
+    const fileContent = fs.readFileSync(file.path, 'utf-8');
+    const {words, uniqueWords, uniqueWordMap, uniqueWordsArray, synonyms} = await countUniqueWords(fileContent);
     const fileInfo = {
-        name: filePath.split('/').pop(),
-        size: fs.statSync(filePath).size,
-        analytics: await countUniqueWords(fileContent),
+        originalName: file.originalname,
+        uniqueName: file.filename,
+        size: fs.statSync(file.path).size,
+        words,
+        uniqueWordMap,
+        uniqueWords,
+        synonyms,
+        uniqueWordsArray
         // maskedContent: maskWords(fileContent, ['word1', 'word2']) // Add words to mask here
     };
     return fileInfo;
@@ -26,14 +32,14 @@ const countUniqueWords = async(content) => {
     const words = content.toLowerCase().match(/\b(\w+)\b/g);
     const uniqueWords = new Set(words);
     const uniqueWordsArray = Array.from(uniqueWords);
-    const uniqueWordCount = {};
+    const uniqueWordMap = {};
     words.forEach(word => {
-        uniqueWordCount[word] = (uniqueWordCount[word] || 0) + 1;
+        uniqueWordMap[word] = (uniqueWordMap[word] || 0) + 1;
     });
     const wordsWithSynonyms = await Promise.all(uniqueWordsArray.map(word => getSynonyms(word)))
     const result = await Promise.all(wordsWithSynonyms);
 
-    return {words, uniqueWords, uniqueWordCount, uniqueWordsArray, synonyms: result};
+    return {words, uniqueWords, uniqueWordMap, uniqueWordsArray, synonyms: result};
 }
 
 const getSynonyms = (word) => {
@@ -55,7 +61,7 @@ const getSynonyms = (word) => {
 }
 
 
-async function maskWords(content, wordsToMask) {
+ const maskWords = async(content, wordsToMask) => {
     let maskedContent = content;
     wordsToMask.forEach(word => {
         const regex = new RegExp(`\\b${word}\\b`, 'gi');
@@ -64,4 +70,4 @@ async function maskWords(content, wordsToMask) {
     return maskedContent;
 }
 
-processFile(workerData.filePath);
+processFile(workerData.file);
