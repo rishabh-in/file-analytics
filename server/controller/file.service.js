@@ -76,6 +76,17 @@ export const handleUploadFiles = async (req, res) => {
   }
 }
 
+export const handleFetchWordCountDetails = async (req, res) => {
+  try {
+    const {id} = req.params
+    const uniqueWordDetails = await wordModel.find({fileId: id});
+    res.status(200).json({message: "Fetched word count details", data: uniqueWordDetails});
+  } catch (error) {
+    console.log(error);
+    throw new Error(error);
+  }
+}
+
 export const handleDownloadMaskedFile = (req, res) => {
   try {
     
