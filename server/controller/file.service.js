@@ -4,9 +4,10 @@ import fileModel from '../model/file.model.js';
 import wordModel from '../model/word.model.js';
 import generateAndDownloadMaskFile from "../helper/maskFileDownload.js";
 
-export const handleFetchUploadedFiles = (req, res) => {
+export const handleFetchUploadedFiles = async(req, res) => {
   try {
-    console.log(req);
+    const fileData = await fileModel.find({});
+    res.status(200).json({message: "Files fetched successfully", data: fileData});
   } catch (error) {
     console.log(error)
   }
@@ -21,7 +22,6 @@ export const handleUploadFiles = async (req, res) => {
 
       // Perform DB orperation and after finishing db operation emit a notification
       data.forEach( async element => {
-        console.log(element)
         let fileObj = {
           fileId: uuidv4(),
           originalFileName: element.originalName,
@@ -41,9 +41,12 @@ export const handleUploadFiles = async (req, res) => {
             originalFileName: fileObj.originalFileName,
             uniqueFileName: fileObj.uniqueFileName,
             totalCount: element.uniqueWordMap[w],
-            synonyms: element.synonyms.find(syn => syn.hasOwnProperty(w) ? syn.w : [])
           }
-          // console.log(wordObj);
+          element.synonyms.forEach((syn) => {
+            if(syn?.[w]) {
+              wordObj["synonyms"] = syn[w]
+            }
+          })
           wordDataArray.push(wordObj);
         })
         // store unique word details in db
