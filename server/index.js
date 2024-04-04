@@ -7,7 +7,7 @@ const app = express();
 dotenv.config();
 
 connectDB();
-// app.use(generateLogs);
+app.use(generateLogs);
 app.use("/api", FileRouter);
 
 

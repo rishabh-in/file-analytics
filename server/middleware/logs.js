@@ -3,10 +3,9 @@ import path from 'path';
 import { pathToFileURL } from 'url';
 const generateLogs = (req, res, next) => {
   try {
-    console.log()
+    const logFilePath = path.resolve("logs/logs.txt");
     let log = `${Date.now()}: ${req.method} ${req.path} \n`
-    console.log(log)
-    fs.appendFile("../logs/logs.txt", log, (err) => {
+    fs.appendFile(logFilePath, log, (err) => {
       if(err) return new Error(err);
       next();
     })
