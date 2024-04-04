@@ -6,7 +6,7 @@ const wordSchema = new mongoose.Schema({
   originalFileName: String, 
   word: String,
   totalCount: Number,
-  synonyms: [String]
+  synonyms: []
 });
 
 const wordModel = mongoose.model("word", wordSchema);
