@@ -2,10 +2,12 @@ import express from 'express'
 import dotenv from 'dotenv';
 import FileRouter from './routes/file.route.js';
 import connectDB from './utils/connectDB.js';
+import generateLogs from './middleware/logs.js';
 const app = express();
 dotenv.config();
 
 connectDB();
+// app.use(generateLogs);
 app.use("/api", FileRouter);
 
 
