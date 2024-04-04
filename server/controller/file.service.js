@@ -17,41 +17,41 @@ export const handleUploadFiles = async (req, res) => {
     const {maskTerms, maskWordArray} = req.body;
     const {files} = req;
     const promiseArray = files.map(file => processFile(file));
-    // Promise.all(promiseArray).then((data) => {
+    Promise.all(promiseArray).then((data) => {
 
-    //   // Perform DB orperation and after finishing db operation emit a notification
-    //   data.forEach( async element => {
-    //     console.log(element)
-    //     let fileObj = {
-    //       fileId: uuidv4(),
-    //       originalFileName: element.originalName,
-    //       uniqueFileName: element.uniqueName,
-    //       fileSize: element.size,
-    //       totalWordCount: element.words.length,
-    //       uniqueWordCount: element.uniqueWordsArray.length,
-    //     }
-    //     // Store the file details in DB
-    //     await fileModel.create(fileObj);
+      // Perform DB orperation and after finishing db operation emit a notification
+      data.forEach( async element => {
+        console.log(element)
+        let fileObj = {
+          fileId: uuidv4(),
+          originalFileName: element.originalName,
+          uniqueFileName: element.uniqueName,
+          fileSize: element.size,
+          totalWordCount: element.words.length,
+          uniqueWordCount: element.uniqueWordsArray.length,
+        }
+        // Store the file details in DB
+        await fileModel.create(fileObj);
         
-    //     const wordDataArray = [];
-    //     element.uniqueWordsArray.forEach((w) => {
-    //       const wordObj = {
-    //         fileId: fileObj.fileId,
-    //         word: w,
-    //         originalFileName: fileObj.originalFileName,
-    //         uniqueFileName: fileObj.uniqueFileName,
-    //         totalCount: element.uniqueWordMap[w],
-    //         synonyms: element.synonyms.find(syn => syn.hasOwnProperty(w) ? syn.w : [])
-    //       }
-    //       // console.log(wordObj);
-    //       wordDataArray.push(wordObj);
-    //     })
-    //     // store unique word details in db
-    //     await wordModel.insertMany(wordDataArray);
+        const wordDataArray = [];
+        element.uniqueWordsArray.forEach((w) => {
+          const wordObj = {
+            fileId: fileObj.fileId,
+            word: w,
+            originalFileName: fileObj.originalFileName,
+            uniqueFileName: fileObj.uniqueFileName,
+            totalCount: element.uniqueWordMap[w],
+            synonyms: element.synonyms.find(syn => syn.hasOwnProperty(w) ? syn.w : [])
+          }
+          // console.log(wordObj);
+          wordDataArray.push(wordObj);
+        })
+        // store unique word details in db
+        await wordModel.insertMany(wordDataArray);
 
-    //     // Notify user that files are processed
-    //   });
-    // })
+        // Notify user that files are processed
+      });
+    })
     if(maskTerms) {
       // do the transformation and return the new file in response.
       let newMaskWordArray = maskWordArray.split(",").map((val) => val.trim())
