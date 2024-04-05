@@ -12,6 +12,12 @@ const UploadFile = () => {
 
   const uploadFiles = async(formData) => {
     try {
+      if(!formData.has("files")){
+        api.error({
+          message: "Please select a file to upload"
+        })
+        return;
+      }
       const response = await axios.post("http://localhost:4001/api/files/upload", formData);
       if(response.status == 200) {
         api.success({

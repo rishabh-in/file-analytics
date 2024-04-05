@@ -52,12 +52,13 @@ export const handleUploadFiles = async (req, res) => {
         // store unique word details in db
         await wordModel.insertMany(wordDataArray);
       });
-      
+
       console.log("Files and words stored in DB")
       // Notify user that files are processed
       soc.emit('file processing done');
     }).catch((err) => {
-      console.log("Error occured", err)
+      console.log("Error in processing files.", err.message)
+      soc.emit('error', ("Error in processing files." + err.message));
     })
     if(maskTerms) {
       // do the transformation and return the new file in response.
@@ -86,6 +87,7 @@ export const handleFetchWordCountDetails = async (req, res) => {
 export const handleDownloadMaskedFile = (req, res) => {
   try {
     const {fileId, uniqueFileName, maskTermsArray} = req.body;
+    generateAndDownloadMaskFile(res, uniqueFileName, maskTermsArray);
   } catch (error) {
     console.log(error);
   }

@@ -7,16 +7,18 @@ export const processFile = (file) => {
   return new Promise((resolve, reject) => {
       const worker = new Worker('./helper/worker.js', { workerData: { file } });
       worker.on('message', resolve);
-      worker.on('error', reject);
+      worker.on('error', (err) => {
+        reject(err)
+      });
       worker.on('exit', (code) => {
           if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`));
       });
   });
 }
 
-export const generateAndDownloadMaskFile = (res, files, maskWordArray) => {
+export const generateAndDownloadMaskFile = (res, fileName, maskWordArray) => {
   try {
-    const readStream = fs.createReadStream(files[0].path);
+    const readStream = fs.createReadStream("uploads/"+path);
     const outputFileNamePath = "uploads/masked_" + files[0].path.split("/")[1];
     const outputFileName = outputFileNamePath.split("/")[1];
     const writeStream = fs.createWriteStream(outputFileNamePath);
