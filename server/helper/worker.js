@@ -7,7 +7,7 @@ const processFile = async(file) => {
         const analytics = await getAnalytics(file);
         parentPort.postMessage(analytics);
     } catch (error) {
-        console.log("error", error);
+        console.log("error in process files", error);
         parentPort.postMessage({ error: error.message });
     }
 }
@@ -29,7 +29,7 @@ const processFile = async(file) => {
         };
         return fileInfo;
     } catch (error) {
-        console.log(error)
+        console.log("Error in getAnalytics", error)
         throw new Error(error)
     }
 
@@ -48,7 +48,7 @@ const countUniqueWords = async(content) => {
         // const result = await Promise.all(wordsWithSynonyms);
         return {words, uniqueWords, uniqueWordMap, uniqueWordsArray, synonyms: wordsWithSynonyms};
     } catch (error) {
-        console.log(error);
+        console.log("Errrrorrrrrrr in countUnique",error);
         throw new Error(error)
     }
 
@@ -67,7 +67,8 @@ const getSynonyms = (word) => {
             const result = {[word]: synonyms}
             resolve(result || []);
             } catch (error) {
-                reject("Error in getting response")
+                console.log(error);
+                reject("Error in getting response from yandex")
             }
     })
 }

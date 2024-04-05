@@ -11,7 +11,7 @@ const duplicateFileValidation = async (req, res, next) => {
     if(result.length > 0) {
       files.forEach(element => {
         fs.unlink(element.path, (err) => {
-          console.log(err);
+          console.log("error", err);
         });  
       });
       res.status(400).json({error: "File already exist"})

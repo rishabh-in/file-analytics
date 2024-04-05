@@ -2,7 +2,7 @@ import { processFile, generateAndDownloadMaskFile } from "../helper/fileServiceH
 import {v4 as uuidv4} from 'uuid';
 import fileModel from '../model/file.model.js';
 import wordModel from '../model/word.model.js';
-import axios from "axios";
+import { soc } from "../index.js";
 
 export const handleFetchUploadedFiles = async(req, res) => {
   try {
@@ -22,46 +22,42 @@ export const handleUploadFiles = async (req, res) => {
 
       // Perform DB orperation and after finishing db operation emit a notification
       data.forEach( async element => {
-        try {
-          let fileObj = {
-            fileId: uuidv4(),
-            originalFileName: element.originalName,
-            uniqueFileName: element.uniqueName,
-            fileSize: element.size,
-            totalWordCount: element.words.length,
-            uniqueWordCount: element.uniqueWordsArray.length,
-          }
-          // Store the file details in DB
-          await fileModel.create(fileObj);
-          
-          const wordDataArray = [];
-          element.uniqueWordsArray.forEach((w) => {
-            const wordObj = {
-              fileId: fileObj.fileId,
-              word: w,
-              originalFileName: fileObj.originalFileName,
-              uniqueFileName: fileObj.uniqueFileName,
-              totalCount: element.uniqueWordMap[w],
-            }
-            element.synonyms.forEach((syn) => {
-              if(syn?.[w]) {
-                wordObj["synonyms"] = syn[w]
-              }
-            })
-            wordDataArray.push(wordObj);
-          })
-          // store unique word details in db
-          await wordModel.insertMany(wordDataArray);
-          console.log("Files and words stored in DB")
-          // Notify user that files are processed
-        } catch (error) {
-          console.log(error)
-          // res.status(400).json({message: error})
+        let fileObj = {
+          fileId: uuidv4(),
+          originalFileName: element.originalName,
+          uniqueFileName: element.uniqueName,
+          fileSize: element.size,
+          totalWordCount: element.words.length,
+          uniqueWordCount: element.uniqueWordsArray.length,
         }
+        // Store the file details in DB
+        await fileModel.create(fileObj);
         
+        const wordDataArray = [];
+        element.uniqueWordsArray.forEach((w) => {
+          const wordObj = {
+            fileId: fileObj.fileId,
+            word: w,
+            originalFileName: fileObj.originalFileName,
+            uniqueFileName: fileObj.uniqueFileName,
+            totalCount: element.uniqueWordMap[w],
+          }
+          element.synonyms.forEach((syn) => {
+            if(syn?.[w]) {
+              wordObj["synonyms"] = syn[w]
+            }
+          })
+          wordDataArray.push(wordObj);
+        })
+        // store unique word details in db
+        await wordModel.insertMany(wordDataArray);
       });
+      
+      console.log("Files and words stored in DB")
+      // Notify user that files are processed
+      soc.emit('file processing done');
     }).catch((err) => {
-      console.log(err)
+      console.log("Error occured", err)
     })
     if(maskTerms) {
       // do the transformation and return the new file in response.
