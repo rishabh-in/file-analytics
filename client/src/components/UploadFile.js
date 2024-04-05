@@ -1,29 +1,29 @@
 import React, { useState } from 'react';
 import axios from 'axios'
 import {InboxOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, message, Upload } from 'antd';
+import { Button, message, Upload, notification } from 'antd';
 import { useQuery } from 'react-query';
 const { Dragger } = Upload;
 
 const UploadFile = () => {
 
   const [files, setfiles] = useState([]);
+  const [api, contextHolder] = notification.useNotification();
 
   const uploadFiles = async(formData) => {
-
-    const response = await axios.post("http://localhost:4001/api/files/upload", formData)
-    // if(response.status == 200) {
-    //   const url = window.URL.createObjectURL(new Blob([response.data]));
-    //   const link = document.createElement('a');
-    //   link.href = url;
-    //   link.setAttribute('download', "test.txt");
-    //   document.body.appendChild(link);
-    //   link.click();
-
-    //   // Clean up
-    //   window.URL.revokeObjectURL(url);
-    //   document.body.removeChild(link);
-    // }
+    try {
+      const response = await axios.post("http://localhost:4001/api/files/upload", formData);
+      if(response.status == 200) {
+        api.success({
+          message: "Process has started. Please wait for some time."
+        })
+      }
+    } catch (error) {
+      console.log(error);
+      api.error({
+        message: error.response.data.error
+      })
+    }
   }
 
   const handleUpload = () => {
@@ -31,8 +31,8 @@ const UploadFile = () => {
     files.forEach((file) => {
       formData.append('files', file.originFileObj);
     })
-    formData.append('maskTerms', true);
-    formData.append('maskTermArray', ["rishabh"])
+    // formData.append('maskTerms', true);
+    // formData.append('maskTermArray', ["rishabh"])
     uploadFiles(formData)
   }
 
@@ -58,6 +58,7 @@ const UploadFile = () => {
   };
   return(
     <div className='w-full flex flex-col items-center justify-center mt-16 p-8'>
+      {contextHolder}
       <div className='w-6/12 shadow-lg'>
         <Dragger {...props} >
           <p className="ant-upload-drag-icon">
