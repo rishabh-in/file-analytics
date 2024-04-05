@@ -12,7 +12,6 @@ const UploadFile = () => {
   const uploadFiles = async(formData) => {
 
     const response = await axios.post("http://localhost:4001/api/files/upload", formData)
-    console.log(response)
     // if(response.status == 200) {
     //   const url = window.URL.createObjectURL(new Blob([response.data]));
     //   const link = document.createElement('a');
@@ -28,7 +27,6 @@ const UploadFile = () => {
   }
 
   const handleUpload = () => {
-    console.log("files", files)
     const formData = new FormData();
     files.forEach((file) => {
       formData.append('files', file.originFileObj);
@@ -58,8 +56,6 @@ const UploadFile = () => {
       console.log('Dropped files', e.dataTransfer.files);
     },
   };
-  console.log("files", files)
-  console.log("props", props)
   return(
     <div className='w-full flex flex-col items-center justify-center mt-16 p-8'>
       <div className='w-6/12 shadow-lg'>

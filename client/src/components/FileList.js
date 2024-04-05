@@ -1,17 +1,28 @@
 import React from 'react'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import Loading from './common/Loading';
 import Card from './common/Card';
 import { Link } from 'react-router-dom';
 import { Space, Table, Tag } from 'antd';
+import { deleteFiles, fetchFilesData } from '../helper/fileListHelper';
 
 const FileList = () => {
-  const fetchFilesData = async() => {
-    const response = await fetch("http://localhost:4001/api/files");
-    const json = await response.json();
-    return json.data;
-  }
+  const queryClient = new useQueryClient();
   const {data, isLoading, error} = useQuery('files', fetchFilesData);
+
+  const deleteItemMutation = useMutation(deleteFiles, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("files")
+    }
+  })
+
+  const handleDelete = (action) => {
+    deleteItemMutation.mutate(action);
+  }
+
+  const handleDownload = (action) => {
+
+  }
 
   if(isLoading) return <Loading />;
   if(error) return <div>Error occured. Please try again after some time</div>
@@ -47,11 +58,12 @@ const FileList = () => {
     },
     {
       title: "Actions",
+      dataIndex: "actions",
       key: "actions",
-      render: () => (
+      render: (action) => (
         <Space size="middle">
-          <Link className='text-blue-500'>Download</Link>
-          <Link className='text-blue-500'>Delete</Link>
+          <Link onClick={() => handleDownload(action)} className='text-blue-500'>Download</Link>
+          <Link onClick={() => handleDelete(action)} className='text-blue-500'>Delete</Link>
         </Space>
       )
     }
@@ -66,10 +78,10 @@ const FileList = () => {
       totalWordCount: r.totalWordCount,
       uniqueWordCount: r.uniqueWordCount,
       createdAt: formattedDate,
-      id: r.fileId
+      id: r.fileId,
+      actions: {fileId: r.fileId, uniqueFileName: r.uniqueFileName}
     }
   })
-  console.log("dataRows", dataRows)
   return (
     <div className='w-full flex justify-center'>
       <Table className='w-9/12 border-black rounded-lg shadow-lg' columns={columns} dataSource={dataRows} />

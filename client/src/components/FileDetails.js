@@ -10,7 +10,7 @@ const FileDetails = () => {
   const fetchWordCountDetailsOfFile = async() => {
     const response = await fetch(`http://localhost:4001/api/files/${id}/words`);
     const json = await response.json();
-    return json
+    return json.data
   }
 
   // fetch data using id
@@ -42,7 +42,7 @@ const FileDetails = () => {
     }
   ]
 
-  const dataSet = data.data.map((d) => {
+  const dataSet = data.map((d) => {
     const limitedSynonyms = d.synonyms.slice(0, 5);
     return {
       word: d.word,

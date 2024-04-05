@@ -52,7 +52,7 @@ export const handleUploadFiles = async (req, res) => {
           })
           // store unique word details in db
           await wordModel.insertMany(wordDataArray);
-
+          console.log("Files and words stored in DB")
           // Notify user that files are processed
         } catch (error) {
           console.log(error)
@@ -89,7 +89,18 @@ export const handleFetchWordCountDetails = async (req, res) => {
 
 export const handleDownloadMaskedFile = (req, res) => {
   try {
-    
+    const {fileId, uniqueFileName, maskTermsArray} = req.body;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const handleDeleteFile = async(req, res) => {
+  try {
+    const {fileId} = req.params;
+    await fileModel.deleteOne({fileId});
+    await wordModel.deleteOne({fileId});
+    res.status(200).json({message: "File delete"})
   } catch (error) {
     console.log(error);
   }
