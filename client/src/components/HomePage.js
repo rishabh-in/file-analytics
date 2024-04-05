@@ -1,11 +1,11 @@
 import React from 'react'
-import Upload from './Upload'
+import UploadFile from './UploadFile'
 import FileList from './FileList'
 
 const HomePage = () => {
   return (
     <div>
-      <Upload />
+      <UploadFile />
       <FileList />
     </div>
   )

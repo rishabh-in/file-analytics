@@ -15,7 +15,7 @@ export const handleFetchUploadedFiles = async(req, res) => {
 
 export const handleUploadFiles = async (req, res) => {
   try {
-    const {maskTerms, maskWordArray} = req.body;
+    const {maskTerms, maskTermArray} = req.body;
     const {files} = req;
     const promiseArray = files.map(file => processFile(file));
     Promise.all(promiseArray).then((data) => {
@@ -65,8 +65,8 @@ export const handleUploadFiles = async (req, res) => {
     })
     if(maskTerms) {
       // do the transformation and return the new file in response.
-      let newMaskWordArray = maskWordArray.split(",").map((val) => val.trim())
-      generateAndDownloadMaskFile(res, files, newMaskWordArray);
+      let newMaskTermArray = maskTermArray.split(",").map((val) => val.trim())
+      generateAndDownloadMaskFile(res, files, newMaskTermArray);
     } else {
       res.status(200).json({message: "Operation has started"})
 

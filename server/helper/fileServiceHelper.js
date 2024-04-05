@@ -17,8 +17,9 @@ export const processFile = (file) => {
 export const generateAndDownloadMaskFile = (res, files, maskWordArray) => {
   try {
     const readStream = fs.createReadStream(files[0].path);
-    const outputFileName = "uploads/masked_" + files[0].path.split("/")[1];
-    const writeStream = fs.createWriteStream(outputFileName);
+    const outputFileNamePath = "uploads/masked_" + files[0].path.split("/")[1];
+    const outputFileName = outputFileNamePath.split("/")[1];
+    const writeStream = fs.createWriteStream(outputFileNamePath);
 
     const masking = new Transform({
       transform(chunk, encoding, callback) {
@@ -36,7 +37,7 @@ export const generateAndDownloadMaskFile = (res, files, maskWordArray) => {
         console.log(err)
       } else {
         console.log("pipeline successful");
-        res.download(outputFileName);
+        res.download(outputFileNamePath, outputFileName);
       }
     })
 
