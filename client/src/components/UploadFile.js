@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios'
 import {InboxOutlined, UploadOutlined } from '@ant-design/icons';
 import { Button, message, Upload, notification } from 'antd';
-import { useQuery } from 'react-query';
 const { Dragger } = Upload;
 
 const UploadFile = () => {
@@ -21,7 +20,8 @@ const UploadFile = () => {
       const response = await axios.post("http://localhost:4001/api/files/upload", formData);
       if(response.status == 200) {
         api.success({
-          message: "Process has started. Please wait for some time."
+          message: "File processing has started.",
+          description: "You will be notified up on completion"
         })
       }
     } catch (error) {

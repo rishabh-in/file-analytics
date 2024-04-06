@@ -3,6 +3,7 @@ import {v4 as uuidv4} from 'uuid';
 import fileModel from '../model/file.model.js';
 import wordModel from '../model/word.model.js';
 import { soc } from "../index.js";
+import fs from 'fs';
 
 export const handleFetchUploadedFiles = async(req, res) => {
   try {
@@ -59,6 +60,11 @@ export const handleUploadFiles = async (req, res) => {
     }).catch((err) => {
       console.log("Error in processing files.", err.message)
       soc.emit('error', ("Error in processing files." + err.message));
+      files.forEach(element => {
+        fs.unlink(element.path, (err) => {
+          console.log("error", err);
+        });  
+      });
     })
     if(maskTerms) {
       // do the transformation and return the new file in response.

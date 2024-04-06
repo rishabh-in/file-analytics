@@ -18,8 +18,8 @@ export const processFile = (file) => {
 
 export const generateAndDownloadMaskFile = (res, fileName, maskWordArray) => {
   try {
-    const readStream = fs.createReadStream("uploads/"+path);
-    const outputFileNamePath = "uploads/masked_" + files[0].path.split("/")[1];
+    const readStream = fs.createReadStream("uploads/"+fileName);
+    const outputFileNamePath = "uploads/masked_" + fileName;
     const outputFileName = outputFileNamePath.split("/")[1];
     const writeStream = fs.createWriteStream(outputFileNamePath);
 
@@ -39,7 +39,7 @@ export const generateAndDownloadMaskFile = (res, fileName, maskWordArray) => {
         console.log(err)
       } else {
         console.log("pipeline successful");
-        res.download(outputFileNamePath, outputFileName);
+        res.download(outputFileNamePath);
       }
     })
 

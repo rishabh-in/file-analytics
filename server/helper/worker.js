@@ -64,7 +64,8 @@ const getSynonyms = (word) => {
             const result = {[word]: synonyms}
             resolve(result || []);
             } catch (error) {
-                reject(error.response.data)
+                error = error?.response ? error.response.data : new Error(error);
+                reject(error)
             }
     })
 }

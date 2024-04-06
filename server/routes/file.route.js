@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/files", handleFetchUploadedFiles);
 router.get("/files/:id/words", handleFetchWordCountDetails)
 router.post("/files/upload" ,upload.array('files', 5), duplicateFileValidation, handleUploadFiles);
-router.post("/files/:id/download", handleDownloadMaskedFile);
+router.post("/files/:fileId/download", handleDownloadMaskedFile);
 router.delete("/file/:fileId", handleDeleteFile);
 
 export default router;

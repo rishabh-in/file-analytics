@@ -1,14 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import Loading from './common/Loading';
 import Card from './common/Card';
 import { Link } from 'react-router-dom';
-import { Space, Table, Tag } from 'antd';
-import { deleteFiles, fetchFilesData } from '../helper/fileListHelper';
+import { Button, Input, Modal, Space, Table, Tag } from 'antd';
+import { deleteFiles, downloadFile, fetchFilesData } from '../helper/fileListHelper';
+import Title from 'antd/es/typography/Title';
+import Text from 'antd/es/typography/Text';
+
 
 const FileList = () => {
   const queryClient = new useQueryClient();
   const {data, isLoading, error} = useQuery('files', fetchFilesData);
+  const [open, setOpen] = useState(false);
+  const [action, setAction] = useState({})
+  const [maskTerms, setMaskTerms] = useState()
 
   const deleteItemMutation = useMutation(deleteFiles, {
     onSuccess: () => {
@@ -20,8 +26,23 @@ const FileList = () => {
     deleteItemMutation.mutate(action);
   }
 
-  const handleDownload = (action) => {
+  const handleInputChange = (e) => {
+    setMaskTerms(e.target.value)
+  }
 
+  const showModal = (action) => {
+    setOpen(true);
+    setAction(action)
+  };
+
+  const handleDownload = () => {
+    const maskTermsArray = maskTerms? maskTerms.split(",").map((v) => v.trim()) : [];
+    console.log(action, maskTermsArray)
+    // make api call
+    downloadFile(action, maskTermsArray);
+    setMaskTerms('');
+    setOpen(false);
+    
   }
 
   if(isLoading) return <Loading />;
@@ -62,7 +83,7 @@ const FileList = () => {
       key: "actions",
       render: (action) => (
         <Space size="middle">
-          <Link onClick={() => handleDownload(action)} className='text-blue-500'>Download</Link>
+          <Link onClick={() => showModal(action)} className='text-blue-500'>Download</Link>
           <Link onClick={() => handleDelete(action)} className='text-blue-500'>Delete</Link>
         </Space>
       )
@@ -85,6 +106,24 @@ const FileList = () => {
   return (
     <div className='w-full flex justify-center'>
       <Table className='w-9/12 border-black rounded-lg shadow-lg' columns={columns} dataSource={dataRows} />
+      <Modal 
+        open={open} 
+        onCancel={() => setOpen(false)}
+        className='top-1/3'
+        confirmLoading={true}
+        footer={[
+          <Button onClick={() => setOpen(false)}>Cancel</Button>,
+          <Button onClick={handleDownload}>Download</Button>
+
+        ]}
+      >
+        <Title level={5}>Enter Mask Terms</Title>
+        <Input 
+          onChange={(e) => handleInputChange(e)} 
+          className='my-4' placeholder='Enter comma-separated values (e.g., mask1, mask2, mask3)'
+          value={maskTerms}
+        />
+      </Modal>
     </div>
   )
 }
