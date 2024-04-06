@@ -11,12 +11,38 @@ const UploadFile = () => {
 
   const uploadFiles = async(formData) => {
     try {
+      const SUPPORTED_FILE_FORMAT = ["txt","html","css","js","json","xml","md", "csv"];
+
+      // Perform validations.
       if(!formData.has("files")){
         api.error({
           message: "Please select a file to upload"
         })
         return;
       }
+
+      const addedFiles = formData.getAll("files")
+      if(addedFiles.length > 5) {
+        api.error({
+          message: "Exceed file limit",
+          description: "Cannot upload more then 5 files at once"
+        })
+        return;
+      }  
+
+      const unsupportedFiles = addedFiles.filter((file) => {
+        const parts = file.name.split(".");
+        const extension = parts[parts.length - 1];
+        return (!SUPPORTED_FILE_FORMAT.includes(extension))
+      })
+      
+      if(unsupportedFiles && unsupportedFiles.length > 0) {
+        api.error({
+          message: "Unsupported file format"
+        })
+        return;
+      }
+
       const response = await axios.post("http://localhost:4001/api/files/upload", formData);
       if(response.status == 200) {
         api.success({
@@ -48,8 +74,9 @@ const UploadFile = () => {
     action: 'https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188',
     onChange(info) {
       const { status } = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
+      if (status === 'removed') {
+        setfiles(info.fileList)
+        message.error(`${info.file.name} file removed.`);
       }
       if (status === 'done') {
         setfiles(info.fileList)
@@ -72,7 +99,7 @@ const UploadFile = () => {
           </p>
           <p className="ant-upload-text">Click or drag file to this area to upload</p>
           <p className="ant-upload-hint">
-            Upload single or multiple files
+            Upload single or multiple files (supported file format - txt, html, css, js, json, xml, md, csv)
           </p>
         </Dragger>
       </div>

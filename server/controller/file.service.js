@@ -27,7 +27,7 @@ export const handleUploadFiles = async (req, res) => {
           fileId: uuidv4(),
           originalFileName: element.originalName,
           uniqueFileName: element.uniqueName,
-          fileSize: element.size,
+          fileSize: (element.size / 1000),
           totalWordCount: element.words.length,
           uniqueWordCount: element.uniqueWordsArray.length,
         }

@@ -58,7 +58,8 @@ const FileList = () => {
     {
       title: "File Size",
       dataIndex: "fileSize",
-      key: "fileSize"
+      key: "fileSize",
+      render: (size) => <>{size} kb</>
     },
     {
       title: "Total Word Count",
