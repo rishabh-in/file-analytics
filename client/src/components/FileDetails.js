@@ -1,6 +1,6 @@
 import React from 'react'
 import { useQuery } from 'react-query';
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import Loading from './common/Loading';
 import { Table, Tag } from 'antd';
 
@@ -51,7 +51,12 @@ const FileDetails = () => {
     }
   })
   return (
-    <div className='w-full flex justify-center mt-5'>
+    <div className='w-full relative flex justify-center mt-5'>
+      <div className='absolute left-0 ml-5 bg-blue-300 rounded-full shadow-lg' >
+        <Link to="/">
+          <img className='h-10 cursor-pointer ' alt='img' src='https://www.svgrepo.com/show/18507/back-button.svg'></img>
+        </Link>
+      </div>
       <Table className='w-7/12 rounded-xl shadow-xl' columns={columns} dataSource={dataSet} />
     </div>
   )

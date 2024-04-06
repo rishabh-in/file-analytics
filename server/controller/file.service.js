@@ -103,7 +103,7 @@ export const handleDeleteFile = async(req, res) => {
   try {
     const {fileId} = req.params;
     await fileModel.deleteOne({fileId});
-    await wordModel.deleteOne({fileId});
+    await wordModel.deleteMany({fileId});
     res.status(200).json({message: "File delete"})
   } catch (error) {
     console.log(error);
