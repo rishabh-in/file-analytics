@@ -44,9 +44,15 @@ const Header = () => {
       <Link to="/"><h1 className='pl-5'>File Insights: Count, Uniqueness, Synonyms</h1></Link>
       <div className='relative'>
         <Link><img className='h-10 pr-10 cursor-pointer' alt='img' src='https://www.svgrepo.com/show/31480/notification-bell.svg'/></Link>
-        <div className='absolute flex justify-center items-center w-7 h-7 rounded-full top-0 left-5 bg-red-500  border-2 border-white'>
-          <p className='text-[1.2rem] text-white font-serif'>{notificationCount}</p>
+        {notificationCount > 0 && (
+          <div 
+            className='absolute flex justify-center items-center w-7 h-7 rounded-full top-0 left-5 bg-red-500  border-2 border-white cursor-pointer'
+            onClick={() => clearNotificationCount()}
+          >
+            <p className='text-[1.2rem] text-white font-serif'>{notificationCount}</p>
         </div>
+        )}
+
       </div>
     </div>
   )
