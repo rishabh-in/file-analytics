@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.3'
 
 services:
   react-app:
@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     network_mode: "host"
     environment:
-      - NODE_ENV=local
+      - NODE_ENV=production
     restart: always
     depends_on:
       - node-app
@@ -18,5 +18,5 @@ services:
       dockerfile: Dockerfile
     network_mode: "host"
     environment:
-      - NODE_ENV=local
+      - NODE_ENV=production
     restart: always
